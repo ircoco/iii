@@ -1,0 +1,47 @@
+# V3数据查询系统 Docker Compose 配置
+
+version: '3.8'
+
+services:
+  v3-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: v3-data-query-system:latest
+    container_name: v3-data-query-system
+    restart: unless-stopped
+    ports:
+      - "5003:5003"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app_v3.py
+      - GUNICORN_WORKERS=2
+      - GUNICORN_THREADS=4
+      - PLAYWRIGHT_HEADLESS=true
+      - DISABLE_GPU=true
+      - DISABLE_DEV_SHM=true
+      - LOW_RESOURCE_MODE=true
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - v3-network
+
+networks:
+  v3-network:
+    driver: bridge
