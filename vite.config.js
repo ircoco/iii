@@ -12,12 +12,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'templates/index.html')
-      },
-      output: {
-        manualChunks: {
-          vendor: ['config', 'api', 'ui', 'calculationService'],
-          app: ['script']
-        }
       }
     },
     terserOptions: {
@@ -40,8 +34,5 @@ export default defineConfig({
         changeOrigin: true
       }
     }
-  },
-  optimizeDeps: {
-    include: ['static/js/config.js', 'static/js/api.js', 'static/js/ui.js']
   }
 });
