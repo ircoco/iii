@@ -130,10 +130,10 @@ const API = (function() {
         const defaultOptions = {
             method: 'GET',
             useCache: true,
-            cacheTTL: CONFIG.PERFORMANCE.CACHE_TTL,
+            cacheTTL: CONFIG.PERFORMANCE.CACHE_TTL || 300000,
             retries: CONFIG.API.MAX_RETRIES,
             retryDelay: CONFIG.API.RETRY_DELAY,
-            timeout: CONFIG.API.REQUEST_TIMEOUT
+            timeout: CONFIG.API.REQUEST_TIMEOUT || 30000
         };
         
         // 合并选项
@@ -162,7 +162,7 @@ const API = (function() {
             while (retries <= requestOptions.retries) {
                 try {
                     // 构建请求URL和选项
-                    const url = endpoint.startsWith('http') ? endpoint : `${CONFIG.API.BASE_URL}${endpoint}`;
+                    const url = endpoint.startsWith('http') ? endpoint : `${CONFIG.API.BASE_URL || ''}${endpoint}`;
                     const fetchOptions = {
                         method: requestOptions.method,
                         headers: {

@@ -140,19 +140,45 @@ const UI = (function() {
      * @returns {Object} 验证结果
      */
     function validateForm(data) {
-        // 检查必填字段
-        if (!data.queryInput || data.queryInput.trim() === '') {
+        // 检查项目ID
+        if (!data.project_id || data.project_id.trim() === '') {
             return {
                 isValid: false,
-                message: CONFIG.ERROR_MESSAGES.EMPTY_QUERY
+                message: CONFIG.ERROR_MESSAGES.FIELD_ERRORS.PROJECT_ID_REQUIRED
             };
         }
         
-        // 检查查询长度
-        if (data.queryInput.length > CONFIG.VALIDATION.MAX_QUERY_LENGTH) {
+        // 检查UK代码
+        if (!data.uk_code || data.uk_code.trim() === '') {
             return {
                 isValid: false,
-                message: CONFIG.ERROR_MESSAGES.QUERY_TOO_LONG
+                message: CONFIG.ERROR_MESSAGES.FIELD_ERRORS.UK_CODE_REQUIRED
+            };
+        }
+        
+        // 检查日期
+        if (!data.start_date) {
+            return {
+                isValid: false,
+                message: CONFIG.ERROR_MESSAGES.FIELD_ERRORS.START_DATE_REQUIRED
+            };
+        }
+        
+        if (!data.end_date) {
+            return {
+                isValid: false,
+                message: CONFIG.ERROR_MESSAGES.FIELD_ERRORS.END_DATE_REQUIRED
+            };
+        }
+        
+        // 检查日期范围
+        const startDate = new Date(data.start_date);
+        const endDate = new Date(data.end_date);
+        
+        if (endDate < startDate) {
+            return {
+                isValid: false,
+                message: CONFIG.ERROR_MESSAGES.FIELD_ERRORS.DATE_RANGE_INVALID
             };
         }
         

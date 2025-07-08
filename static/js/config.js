@@ -9,13 +9,10 @@ const CONFIG = (function() {
     
     // API配置
     const API = {
-        // API端点
-        ENDPOINTS: {
-            QUERY: '/api/query',
-            HEALTH: '/health'
-        },
+        // 基础URL
+        BASE_URL: window.location.origin,
         // 请求超时时间(毫秒)
-        TIMEOUT: 30000,
+        REQUEST_TIMEOUT: 30000,
         // 重试次数
         MAX_RETRIES: 3,
         // 重试延迟(毫秒)
@@ -111,6 +108,10 @@ const CONFIG = (function() {
     
     // 性能优化配置
     const PERFORMANCE = {
+        // 缓存大小
+        CACHE_SIZE: 100,
+        // 缓存生存时间(毫秒)
+        CACHE_TTL: 5 * 60 * 1000, // 5分钟
         // 防抖延迟(毫秒)
         DEBOUNCE_DELAY: 300,
         // 节流延迟(毫秒)

@@ -10,8 +10,8 @@
     <meta name="author" content="V3开发团队">
     
     <!-- 外部CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2/dist/tailwind.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 自定义CSS -->
     <link rel="stylesheet" href="/static/css/style.css">
@@ -284,10 +284,28 @@
     </div>
 
     <!-- JavaScript文件 -->
+    <script>
+        // 初始化配置
+        window.APP_CONFIG = {
+            API_BASE_URL: window.location.origin,
+            VERSION: '3.0.0',
+            ENVIRONMENT: 'production'
+        };
+    </script>
     <script src="/static/js/config.js"></script>
     <script src="/static/js/api.js"></script>
     <script src="/static/js/ui.js"></script>
     <script src="/static/js/calculationService.js"></script>
     <script src="/static/js/script.js"></script>
+    
+    <script>
+        // 页面加载完成后隐藏加载指示器
+        window.addEventListener('load', function() {
+            const loader = document.getElementById('page-loader');
+            if (loader) {
+                loader.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>
