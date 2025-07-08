@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>V3数据查询系统</title>
+    <meta name="description" content="V3版本数据查询系统，集成Playwright浏览器自动化，优化性能，支持低配置服务器">
+    <meta name="keywords" content="数据查询,V3,Playwright,自动化">
+    <meta name="author" content="V3开发团队">
+    
+    <!-- 外部CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2/dist/tailwind.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- 自定义CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <!-- 预加载关键资源 -->
+    <link rel="preload" href="/static/js/script.js" as="script">
+    <link rel="preload" href="/static/js/api.js" as="script">
+    <link rel="preload" href="/static/css/style.css" as="style">
+    
+    <!-- 网站图标 -->
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- 页面加载指示器 -->
+    <div id="page-loader" class="fixed inset-0 flex items-center justify-center bg-white z-50">
+        <div class="loader"></div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <h1 class="text-xl font-bold">V3数据查询系统</h1>
+            </div>
+            <div class="hidden md:flex space-x-4">
+                <a href="#" class="hover:text-blue-200 transition-colors duration-200">首页</a>
+                <a href="#" class="hover:text-blue-200 transition-colors duration-200">文档</a>
+                <a href="#" class="hover:text-blue-200 transition-colors duration-200">关于</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-blue-700 pb-4 px-4">
+            <a href="#" class="block py-2 hover:text-blue-200 transition-colors duration-200">首页</a>
+            <a href="#" class="block py-2 hover:text-blue-200 transition-colors duration-200">文档</a>
+            <a href="#" class="block py-2 hover:text-blue-200 transition-colors duration-200">关于</a>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- 查询表单卡片 -->
+            <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-1">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">数据查询</h2>
+                <form id="query-form" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label" for="project-id">
+                            <span class="label-text font-medium">项目ID</span>
+                        </label>
+                        <input type="text" id="project-id" name="project_id" placeholder="输入项目ID" 
+                               class="input input-bordered w-full" required>
+                        <div class="error-message text-red-500 text-sm mt-1 hidden" id="project-id-error"></div>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label" for="uk-code">
+                            <span class="label-text font-medium">UK代码</span>
+                        </label>
+                        <input type="text" id="uk-code" name="uk_code" placeholder="输入UK代码" 
+                               class="input input-bordered w-full" required>
+                        <div class="error-message text-red-500 text-sm mt-1 hidden" id="uk-code-error"></div>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label" for="start-date">
+                            <span class="label-text font-medium">开始日期</span>
+                        </label>
+                        <input type="date" id="start-date" name="start_date" 
+                               class="input input-bordered w-full" required>
+                        <div class="error-message text-red-500 text-sm mt-1 hidden" id="start-date-error"></div>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label" for="end-date">
+                            <span class="label-text font-medium">结束日期</span>
+                        </label>
+                        <input type="date" id="end-date" name="end_date" 
+                               class="input input-bordered w-full" required>
+                        <div class="error-message text-red-500 text-sm mt-1 hidden" id="end-date-error"></div>
+                    </div>
+                    
+                    <div class="form-control mt-6">
+                        <button type="submit" id="submit-button" 
+                                class="btn btn-primary w-full">
+                            <span id="button-text">查询数据</span>
+                            <span id="button-loader" class="hidden">
+                                <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                处理中...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- 系统状态 -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">系统状态</h3>
+                    <div class="flex items-center space-x-2">
+                        <div id="system-status-indicator" class="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span id="system-status-text" class="text-sm">系统正常运行中</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1" id="last-updated">最后更新: 刚刚</div>
+                </div>
+            </div>
+            
+            <!-- 结果展示区域 -->
+            <div class="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
+                <div id="results-container">
+                    <div id="initial-state" class="text-center py-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3 class="mt-4 text-lg font-medium text-gray-600">输入查询条件开始</h3>
+                        <p class="mt-2 text-gray-500">填写左侧表单并提交以查询数据</p>
+                    </div>
+                    
+                    <div id="loading-state" class="hidden text-center py-12">
+                        <div class="loader mx-auto"></div>
+                        <h3 class="mt-4 text-lg font-medium text-gray-600">正在查询数据</h3>
+                        <p class="mt-2 text-gray-500" id="loading-message">请稍候，正在处理您的请求...</p>
+                    </div>
+                    
+                    <div id="error-state" class="hidden text-center py-12">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="mt-4 text-lg font-medium text-gray-600">查询出错</h3>
+                        <p class="mt-2 text-red-500" id="error-message">发生错误，请重试</p>
+                        <button id="retry-button" class="mt-4 btn btn-outline btn-sm">重试</button>
+                    </div>
+                    
+                    <div id="results-state" class="hidden">
+                        <!-- 统计信息卡片 -->
+                        <div class="stats-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                            <div class="stat-card bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                <h4 class="text-sm font-medium text-blue-700">总记录数</h4>
+                                <p id="total-count" class="text-2xl font-bold text-blue-800">0</p>
+                            </div>
+                            <div class="stat-card bg-green-50 p-4 rounded-lg border border-green-100">
+                                <h4 class="text-sm font-medium text-green-700">总金额</h4>
+                                <p id="total-amount" class="text-2xl font-bold text-green-800">¥0.00</p>
+                            </div>
+                            <div class="stat-card bg-purple-50 p-4 rounded-lg border border-purple-100">
+                                <h4 class="text-sm font-medium text-purple-700">平均金额</h4>
+                                <p id="average-amount" class="text-2xl font-bold text-purple-800">¥0.00</p>
+                            </div>
+                            <div class="stat-card bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                                <h4 class="text-sm font-medium text-yellow-700">成功率</h4>
+                                <p id="success-rate" class="text-2xl font-bold text-yellow-800">0%</p>
+                            </div>
+                        </div>
+                        
+                        <!-- 查询信息 -->
+                        <div class="query-info bg-gray-50 p-3 rounded-md mb-4 text-sm">
+                            <div class="flex flex-wrap gap-x-4 gap-y-2">
+                                <div>
+                                    <span class="font-medium">项目ID:</span> 
+                                    <span id="result-project-id">-</span>
+                                </div>
+                                <div>
+                                    <span class="font-medium">UK代码:</span> 
+                                    <span id="result-uk-code">-</span>
+                                </div>
+                                <div>
+                                    <span class="font-medium">日期范围:</span> 
+                                    <span id="result-date-range">-</span>
+                                </div>
+                                <div>
+                                    <span class="font-medium">查询时间:</span> 
+                                    <span id="result-timestamp">-</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 数据表格 -->
+                        <div class="overflow-x-auto">
+                            <table id="results-table" class="table w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">金额</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">详情</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">利润</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-body">
+                                    <!-- 数据行将通过JavaScript动态添加 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 导出按钮 -->
+                        <div class="mt-4 flex justify-end space-x-2">
+                            <button id="export-csv" class="btn btn-outline btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                导出CSV
+                            </button>
+                            <button id="print-results" class="btn btn-outline btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                </svg>
+                                打印
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">关于V3系统</h3>
+                    <p class="text-gray-400">V3数据查询系统是一款高性能、低资源消耗的数据查询工具，专为低配置服务器环境优化。</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">使用文档</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">API参考</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors duration-200">常见问题</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系我们</h3>
+                    <p class="text-gray-400">如有任何问题或建议，请联系技术支持团队。</p>
+                    <p class="text-gray-400 mt-2">邮箱: support@example.com</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
+                <p>© 2023 V3数据查询系统. 保留所有权利.</p>
+                <p class="text-xs mt-2">版本 3.0.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 通知组件 -->
+    <div id="notification" class="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 transform translate-y-full opacity-0 transition-all duration-300 max-w-md">
+        <div class="flex items-start">
+            <div id="notification-icon" class="flex-shrink-0 w-6 h-6 mr-3"></div>
+            <div class="flex-1">
+                <h3 id="notification-title" class="text-sm font-medium"></h3>
+                <p id="notification-message" class="mt-1 text-sm text-gray-500"></p>
+            </div>
+            <button id="notification-close" class="flex-shrink-0 ml-4 text-gray-400 hover:text-gray-500 focus:outline-none">
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript文件 -->
+    <script src="/static/js/config.js"></script>
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/ui.js"></script>
+    <script src="/static/js/calculationService.js"></script>
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
