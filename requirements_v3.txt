@@ -1,0 +1,69 @@
+# Flask应用V3版本依赖
+# 核心依赖
+flask==2.3.3
+werkzeug==2.3.7
+click==8.1.7
+itsdangerous==2.1.2
+jinja2==3.1.2
+markupsafe==2.1.3
+
+# 浏览器自动化
+playwright==1.40.0
+asyncio==3.4.3
+pyee==11.0.1
+greenlet==2.0.2
+
+# HTTP客户端
+requests==2.31.0
+aiohttp==3.8.5
+certifi==2023.7.22
+charset-normalizer==3.2.0
+idna==3.4
+urllib3==2.0.4
+multidict==6.0.4
+yarl==1.9.2
+aiosignal==1.3.1
+async-timeout==4.0.3
+frozenlist==1.4.0
+
+# 性能优化
+cachetools==5.3.1
+fasteners==0.18
+tenacity==8.2.3
+
+# 并发处理
+concurrent-log-handler==0.9.24
+futures==3.0.5
+
+# 工具库
+python-dotenv==1.0.0
+pytz==2023.3
+humanize==4.8.0
+pydantic==2.3.0
+pydantic-core==2.6.3
+typing-extensions==4.7.1
+annoted-types==0.5.0
+
+# 数据处理
+pandas==2.1.0
+numpy==1.25.2
+python-dateutil==2.8.2
+six==1.16.0
+tzdata==2023.3
+
+# 日志处理
+colorlog==6.7.0
+portalocker==2.7.0
+
+# 代码质量
+black==23.7.0
+flake8==6.1.0
+isort==5.12.0
+mccabe==0.7.0
+pathspec==0.11.2
+pycodestyle==2.11.0
+pyflakes==3.1.0
+
+# 测试工具
+pytest==7.4.0
+pytest-playwright==0.4.2
